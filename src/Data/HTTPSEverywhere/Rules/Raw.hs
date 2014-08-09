@@ -1,4 +1,4 @@
-module Data.HTTPSEverywhere.Rules.Base (
+module Data.HTTPSEverywhere.Rules.Raw (
   getRule,
   getRules
 ) where
@@ -10,7 +10,7 @@ import Data.Text.Lazy.IO (readFile)
 import System.Directory (getDirectoryContents)
 import System.FilePath.Posix (combine, takeExtension)
 
-import Paths_https_everywhere_rules_base (getDataFileName)
+import Paths_https_everywhere_rules_raw (getDataFileName)
 
 getRule :: FilePath -> IO Text
 getRule = readFile

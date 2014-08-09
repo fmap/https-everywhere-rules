@@ -1,11 +1,11 @@
 name:
-  https-everywhere-rules-base
+  https-everywhere-rules-raw
 version:
   4.0
 synopsis:
   Low-level (i.e. XML) access to HTTPS Everywhere rulesets.
 homepage:
-  https://github.com/fmap/https-everywhere-rules-base
+  https://github.com/fmap/https-everywhere-rules-raw
 license:
   GPL-2
 license-file:
@@ -29,9 +29,9 @@ data-files:
 
 library
   exposed-modules:
-    Data.HTTPSEverywhere.Rules.Base
+    Data.HTTPSEverywhere.Rules.Raw
   other-modules:
-    Paths_https_everywhere_rules_base
+    Paths_https_everywhere_rules_raw
   build-depends:
     base          >= 4.7 && < 4.8,
     directory     >= 1.2 && < 1.3,
