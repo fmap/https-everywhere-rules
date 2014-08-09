@@ -12,7 +12,7 @@ import Data.Functor.Infix ((<$>),(<$$>))
 import Data.Maybe (catMaybes, fromJust)
 import Data.String.Conversions (cs)
 import qualified Data.Text as Strict (Text)
-import Data.Text (append, head, last, tail, init)
+import Data.Text (append, head, last, tail, init, replace)
 import qualified Data.Text.Lazy as Lazy (Text)
 import Network.HTTP.Client (Cookie(..))
 import Text.Taggy.Lens (html, allNamed, attr, Element)
@@ -32,18 +32,19 @@ parseRuleSet xml = xml ^. attr "name" <&> \ruleSetName -> do
   RuleSet ruleSetName ruleSetTargets ruleSetRules ruleSetExclusions ruleSetCookieRules
 
 parseTarget :: Strict.Text -> Target
-parseTarget = Target . fromJust . match . fromWildcard
+parseTarget = Target . fromJust . match . fromWildcard . escapeInput
   where fromWildcard str = if
           | head str == '*' -> prepend ".*" $ tail str
           | last str == '*' -> append  ".*" $ init str
           | otherwise       -> str
+        escapeInput = replace "." "\\."
         prepend = flip append
 
 parseRule :: Element -> Maybe Rule
 parseRule element = do
-  pattern <- element ^. attr "from"
-  replace <- element ^. attr "to"
-  findAndReplace pattern replace <&> Rule
+  pattern     <- element ^. attr "from"
+  replacement <- element ^. attr "to"
+  findAndReplace pattern replacement <&> Rule
 
 parseExclusion :: Strict.Text -> Maybe Exclusion
 parseExclusion = Exclusion <$$> match
