@@ -1,9 +1,13 @@
+{-# LANGUAGE CPP                 #-}
 {-# LANGUAGE MultiWayIf          #-}
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE RecordWildCards     #-}
 
 module Data.HTTPSEverywhere.Rules.Internal.Parser (
-  parseRuleSets
+  parseRuleSets,
+#ifdef TEST
+  parseTarget
+#endif
 ) where
 
 import Prelude hiding (head, last, tail, init)
