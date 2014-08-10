@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP                         #-}
 {-# LANGUAGE LambdaCase                  #-}
 {-# LANGUAGE ViewPatterns                #-}
 {-# LANGUAGE OverloadedStrings           #-}
@@ -5,7 +6,11 @@
 
 module Data.Text.ICU.Extras (
   match,
-  findAndReplace
+  findAndReplace,
+#ifdef TEST
+  Segment(..),
+  parseReplacement
+#endif
 ) where
 
 import Control.Applicative ((<$>), (*>), (<|>))
@@ -29,7 +34,8 @@ findAndReplace pattern replacement = do
 
 type Replacement = [Segment]
 
-data Segment = Reference Int | Literal Text deriving (Show)
+data Segment = Reference Int | Literal Text
+  deriving (Show, Eq)
 
 parseReference :: Parser Segment
 parseReference = char '$' *> digit <&> Reference . read . return

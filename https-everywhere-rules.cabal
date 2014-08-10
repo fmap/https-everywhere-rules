@@ -50,3 +50,32 @@ library
     Haskell2010
   ghc-options:
     -Wall
+
+test-suite spec
+  type:
+    exitcode-stdio-1.0
+  build-depends:
+    base               >= 4.7  && < 4.8,
+    attoparsec         >= 0.12 && < 0.13,
+    http-client        >= 0.3  && < 0.4,
+    text               >= 1.1  && < 1.2,
+    pipes              >= 4.1  && < 4.2,
+    errors             >= 1.4  && < 1.5,
+    lens               >= 4.3  && < 4.4,
+    functor-infix      >= 0.0  && < 0.1,
+    string-conversions >= 0.3  && < 0.4,
+    text-icu           >= 0.6  && < 0.7,
+    taggy-lens         >= 0.1  && < 0.2,
+    hspec              >= 1.10 && < 1.11,
+    https-everywhere-rules-raw
+  main-is:
+    Spec.hs
+  hs-source-dirs:
+    src,
+    test
+  default-language:
+    Haskell2010
+  cpp-options:
+    -DTEST
+  ghc-options:
+    -Wall
