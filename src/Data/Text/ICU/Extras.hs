@@ -1,6 +1,5 @@
 {-# LANGUAGE CPP                         #-}
 {-# LANGUAGE LambdaCase                  #-}
-{-# LANGUAGE ViewPatterns                #-}
 {-# LANGUAGE OverloadedStrings           #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 
@@ -13,24 +12,25 @@ module Data.Text.ICU.Extras (
 #endif
 ) where
 
+import Prelude hiding (span)
 import Control.Applicative ((<$>), (*>), (<|>))
-import Control.Monad ((<=<))
 import Control.Error (hush)
+import Control.Monad (ap)
 import Data.Attoparsec.Text (Parser, char, digit, takeWhile1, string, many', parseOnly)
 import Data.Functor.Infix ((<$$>), (<&>))
 import Data.Maybe (isJust, fromJust)
 import Data.Monoid (Monoid(mconcat))
 import Data.Text (Text)
-import Data.Text.ICU (regex', find, group, Match)
+import Data.Text.ICU (regex', find, findAll, group, span, Match, suffix, groupCount)
 
 match :: Text -> Maybe (Text -> Bool)
 match = isJust <$$> find <$$> hush . regex' []
 
 findAndReplace :: Text -> Text -> Maybe (Text -> Maybe Text)
 findAndReplace pattern replacement = do
-  findAnd <- find <$$> hush $ regex' [] pattern
+  findAnd <- findAll <$$> hush $ regex' [] pattern
   replace <- flip runReplacement <$> parseReplacement replacement
-  return $ replace <=< findAnd
+  return $ replace . findAnd
 
 type Replacement = [Segment]
 
@@ -52,11 +52,19 @@ parseSegment = parseLiteral <|> parseReference <|> parseLiteralDollar
 parseReplacement :: Text -> Maybe Replacement
 parseReplacement = hush . parseOnly (many' parseSegment)
 
-runReplacement :: Match -> Replacement -> Maybe Text
-runReplacement (flip group -> group) = mconcat <$$> invert . map dereference
-  where dereference = \case
-          Reference n -> group n
-          Literal str -> Just str
-        invert xs = if all isJust xs
-          then Just $ fromJust <$> xs
-          else Nothing
+runReplacement :: [Match] -> Replacement -> Maybe Text
+runReplacement matches replacement = mconcat <$$> invert . adornSuffix (last matches) $ do
+  match <- matches
+  Just (span match) : map (dereference $ flip group match) replacement
+
+adornSuffix :: Match -> ([Maybe Text] -> [Maybe Text])
+adornSuffix match = (++ [ap (flip suffix) groupCount match])
+
+dereference :: (Int -> Maybe Text) -> Segment -> Maybe Text
+dereference group = \case
+  Reference n -> group n
+  Literal str -> Just str
+
+invert :: [Maybe a] -> Maybe [a]
+invert xs | all isJust xs = Just $ fromJust <$> xs
+          | otherwise     = Nothing

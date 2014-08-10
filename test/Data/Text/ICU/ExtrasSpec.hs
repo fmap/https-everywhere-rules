@@ -26,7 +26,8 @@ spec = do
       parseReplacement "$$" `shouldBe` Just [Literal "$", Literal "$"]
   describe "findAndReplace" $ do
     it "Should find and replace based upon a regular expression and pattern." $ do
-     ("barbaz" &) <$> findAndReplace "(.*)" "$1qux" `shouldBe` Just (Just "barbazqux")
+     ("barqux" &) <$> findAndReplace "(bar)" "$1baz" `shouldBe` Just (Just "barbazqux")
+     ("barqux" &) <$> findAndReplace "(qux)" "baz$1" `shouldBe` Just (Just "barbazqux")
 
 instance Show (Text -> Bool) where
   show _ = "Text -> Bool"
