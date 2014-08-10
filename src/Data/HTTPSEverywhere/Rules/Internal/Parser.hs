@@ -30,7 +30,7 @@ parseRuleSets = catMaybes <$$> toListOf $ html . allNamed (only "ruleset") . to 
 
 parseRuleSet :: Element -> Maybe RuleSet
 parseRuleSet xml = xml ^. attr "name" <&> \ruleSetName -> do
-  let ruleSetTargets     = xml ^.. allNamed (only "target") . attr "name" . _Just . to parseTarget
+  let ruleSetTargets     = xml ^.. allNamed (only "target") . attr "host" . _Just . to parseTarget
       ruleSetRules       = xml ^.. allNamed (only "rule") . to parseRule & catMaybes
       ruleSetExclusions  = xml ^.. allNamed (only "exclusion") . attr "pattern" . _Just . to parseExclusion & catMaybes
       ruleSetCookieRules = xml ^.. allNamed (only "securecookie") . to parseCookieRule & catMaybes
