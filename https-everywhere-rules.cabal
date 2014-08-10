@@ -34,15 +34,15 @@ library
   build-depends:
     base               >= 4.7  && < 4.8,
     attoparsec         >= 0.12 && < 0.13,
-    http-client        >= 0.3  && < 0.4,
-    text               >= 1.1  && < 1.2,
-    pipes              >= 4.1  && < 4.2,
     errors             >= 1.4  && < 1.5,
-    lens               >= 4.3  && < 4.4,
     functor-infix      >= 0.0  && < 0.1,
+    http-client        >= 0.3  && < 0.4,
+    lens               >= 4.3  && < 4.4,
+    pipes              >= 4.1  && < 4.2,
     string-conversions >= 0.3  && < 0.4,
-    text-icu           >= 0.6  && < 0.7,
     taggy-lens         >= 0.1  && < 0.2,
+    text               >= 1.1  && < 1.2,
+    text-icu           >= 0.6  && < 0.7,
     https-everywhere-rules-raw
   hs-source-dirs:
     src
@@ -57,16 +57,16 @@ test-suite spec
   build-depends:
     base               >= 4.7  && < 4.8,
     attoparsec         >= 0.12 && < 0.13,
-    http-client        >= 0.3  && < 0.4,
-    text               >= 1.1  && < 1.2,
-    pipes              >= 4.1  && < 4.2,
     errors             >= 1.4  && < 1.5,
-    lens               >= 4.3  && < 4.4,
     functor-infix      >= 0.0  && < 0.1,
-    string-conversions >= 0.3  && < 0.4,
-    text-icu           >= 0.6  && < 0.7,
-    taggy-lens         >= 0.1  && < 0.2,
     hspec              >= 1.10 && < 1.11,
+    http-client        >= 0.3  && < 0.4,
+    lens               >= 4.3  && < 4.4,
+    pipes              >= 4.1  && < 4.2,
+    string-conversions >= 0.3  && < 0.4,
+    taggy-lens         >= 0.1  && < 0.2,
+    text               >= 1.1  && < 1.2,
+    text-icu           >= 0.6  && < 0.7,
     https-everywhere-rules-raw
   main-is:
     Spec.hs
