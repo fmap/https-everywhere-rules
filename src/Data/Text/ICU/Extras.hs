@@ -8,13 +8,13 @@ module Data.Text.ICU.Extras (
   findAndReplace
 ) where
 
-import Control.Applicative ((<$>), (*>), (<*>), (<|>))
+import Control.Applicative ((<$>), (*>), (<|>))
 import Control.Monad ((<=<))
 import Control.Error (hush)
 import Data.Attoparsec.Text (Parser, char, digit, takeWhile1, string, many', parseOnly)
 import Data.Functor.Infix ((<$$>), (<&>))
 import Data.Maybe (isJust, fromJust)
-import Data.Monoid (Monoid(mappend,mconcat))
+import Data.Monoid (Monoid(mconcat))
 import Data.Text (Text)
 import Data.Text.ICU (regex', find, group, Match)
 
@@ -37,11 +37,11 @@ parseReference = char '$' *> digit <&> Reference . read . return
 parseLiteral :: Parser Segment
 parseLiteral = Literal <$> takeWhile1 (/= '$')
 
-parseLiteralWithPrecedingDollar :: Parser Segment
-parseLiteralWithPrecedingDollar = Literal <$$> mappend <$> string "$" <*> takeWhile1 (/= '$')
+parseLiteralDollar :: Parser Segment
+parseLiteralDollar = Literal <$> string "$"
 
 parseSegment :: Parser Segment
-parseSegment = parseLiteral <|> parseReference <|> parseLiteralWithPrecedingDollar
+parseSegment = parseLiteral <|> parseReference <|> parseLiteralDollar
 
 parseReplacement :: Text -> Maybe Replacement
 parseReplacement = hush . parseOnly (many' parseSegment)
