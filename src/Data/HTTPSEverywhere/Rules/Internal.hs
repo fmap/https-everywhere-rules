@@ -1,8 +1,15 @@
+{-# LANGUAGE CPP #-}
+
 module Data.HTTPSEverywhere.Rules.Internal (
   getRulesetsMatching,
   havingRulesThatTrigger,
   havingCookieRulesThatTrigger,
-  setSecureFlag
+  setSecureFlag,
+#ifdef TEST
+  hasTargetMatching,
+  hasTriggeringRuleOn,
+  hasExclusionMatching
+#endif
 ) where
 
 import Prelude hiding (readFile, filter)
