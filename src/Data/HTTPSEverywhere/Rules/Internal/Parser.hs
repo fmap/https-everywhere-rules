@@ -1,5 +1,4 @@
 {-# LANGUAGE CPP                 #-}
-{-# LANGUAGE MultiWayIf          #-}
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE RecordWildCards     #-}
 
@@ -12,13 +11,15 @@ module Data.HTTPSEverywhere.Rules.Internal.Parser (
 
 import Prelude hiding (head, last, tail, init)
 import Control.Lens (toListOf, only, to, (^..), (^.), (&), (<&>), _Just)
+import Control.Monad (join)
 import Data.Functor.Infix ((<$>),(<$$>))
-import Data.Maybe (catMaybes, fromJust)
+import Data.Maybe (catMaybes, fromJust, fromMaybe)
 import Data.String.Conversions (cs)
 import qualified Data.Text as Strict (Text)
 import Data.Text (append, head, last, tail, init, replace)
 import qualified Data.Text.Lazy as Lazy (Text)
 import Network.HTTP.Client (Cookie(..))
+import Network.URI (URI(uriAuthority), URIAuth(uriRegName), parseURI)
 import Text.Taggy.Lens (html, allNamed, attr, Element)
 
 import Data.HTTPSEverywhere.Rules.Internal.Types (RuleSet(..), Target(..), Rule(..), Exclusion(..), CookieRule(..))
@@ -36,22 +37,23 @@ parseRuleSet xml = xml ^. attr "name" <&> \ruleSetName -> do
   RuleSet ruleSetName ruleSetTargets ruleSetRules ruleSetExclusions ruleSetCookieRules
 
 parseTarget :: Strict.Text -> Target
-parseTarget = Target . fromJust . match . fromWildcard . escapeInput
-  where fromWildcard str = if
-          | head str == '*' -> prepend ".*" $ tail str
-          | last str == '*' -> append  ".*" $ init str
-          | otherwise       -> str
-        escapeInput = replace "." "\\."
-        prepend = flip append
+parseTarget = Target . checkRegName . fromJust . match . fromWildcard . replace "." "\\."
+  where fromWildcard str
+          | head str == '*' = flip append ".*" $ tail str
+          | last str == '*' = append ".*" $ init str
+          | otherwise       = str
+        checkRegName predicate = fromMaybe False . (predicate <$$> getRegName)
+        getRegName = cs . uriRegName <$$> uriAuthority
 
 parseRule :: Element -> Maybe Rule
 parseRule element = do
   pattern     <- element ^. attr "from"
   replacement <- element ^. attr "to"
-  findAndReplace pattern replacement <&> Rule
+  substitute  <- findAndReplace pattern replacement 
+  return . Rule $ join . fmap (parseURI . cs) . substitute . cs . show
 
 parseExclusion :: Strict.Text -> Maybe Exclusion
-parseExclusion = Exclusion <$$> match
+parseExclusion = Exclusion . (. cs . show) <$$> match
 
 parseCookieRule :: Element -> Maybe CookieRule
 parseCookieRule element = CookieRule <$> do

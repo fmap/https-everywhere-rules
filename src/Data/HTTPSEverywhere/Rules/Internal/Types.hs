@@ -8,10 +8,11 @@ module Data.HTTPSEverywhere.Rules.Internal.Types (
 
 import Data.Text (Text)
 import Network.HTTP.Client (Cookie)
+import Network.URI (URI)
 
-newtype Rule       = Rule       { getRule :: Text -> Maybe Text   }
-newtype Target     = Target     { getTarget :: Text -> Bool       }
-newtype Exclusion  = Exclusion  { getExclusion :: Text -> Bool    }
+newtype Rule       = Rule       { getRule :: URI -> Maybe URI     }
+newtype Target     = Target     { getTarget :: URI  -> Bool       }
+newtype Exclusion  = Exclusion  { getExclusion :: URI -> Bool     }
 newtype CookieRule = CookieRule { getCookieRule :: Cookie -> Bool }
 
 data RuleSet = RuleSet
