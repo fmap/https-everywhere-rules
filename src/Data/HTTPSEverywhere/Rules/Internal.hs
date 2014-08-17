@@ -51,7 +51,7 @@ hasTargetMatching ruleset url = getTargets ruleset <*> [url] & or
   where getTargets = getTarget <$$> ruleSetTargets
 
 hasExclusionMatching :: RuleSet -> URI -> Bool
-hasExclusionMatching ruleset url = getExclusions ruleset <*> [url] & or & not
+hasExclusionMatching ruleset url = getExclusions ruleset <*> [url] & or
   where getExclusions = getExclusion <$$> ruleSetExclusions
 
 hasTriggeringRuleOn :: RuleSet -> URI -> Maybe URI -- Nothing ~ False
