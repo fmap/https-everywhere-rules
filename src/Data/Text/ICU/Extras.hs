@@ -53,12 +53,16 @@ parseReplacement :: Text -> Maybe Replacement
 parseReplacement = hush . parseOnly (many' parseSegment)
 
 runReplacement :: [Match] -> Replacement -> Maybe Text
-runReplacement matches replacement = mconcat <$$> invert . adornSuffix (last matches) $ do
+runReplacement matches replacement = mconcat <$$> invert . adornSuffix (safeLast matches) $ do
   match <- matches
   Just (span match) : map (dereference $ flip group match) replacement
 
-adornSuffix :: Match -> ([Maybe Text] -> [Maybe Text])
-adornSuffix match = (++ [ap (flip suffix) groupCount match])
+safeLast :: [a] -> Maybe a
+safeLast = \case { [] -> Nothing; xs -> Just $ last xs }
+
+adornSuffix :: Maybe Match -> ([Maybe Text] -> [Maybe Text])
+adornSuffix Nothing = id
+adornSuffix (Just match) = (++ [ap (flip suffix) groupCount match])
 
 dereference :: (Int -> Maybe Text) -> Segment -> Maybe Text
 dereference group = \case
