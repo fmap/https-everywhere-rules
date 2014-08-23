@@ -41,10 +41,6 @@ spec = do
       length (ruleSetRules effRuleSet) `shouldBe` 2
     it "Should parse out one exclusion from the EFF fixture." $ do
       length (ruleSetExclusions effRuleSet) `shouldBe` 1
-
-    -- BE WARY: the succeeding may fail due to bugs in the parent module, which
-    -- has no tests yet.
-
     it "A target in the EFF fixture should match eff.org" $ do
       let url = unsafeParseURL "http://eff.org/thing"
       effRuleSet `hasTargetMatching` url `shouldBe` True
