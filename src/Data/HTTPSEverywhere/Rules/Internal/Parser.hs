@@ -59,4 +59,4 @@ parseCookieRule :: Element -> Maybe CookieRule
 parseCookieRule element = CookieRule <$> do
   hostMatches <- element ^. attr "host" . to (>>= match)
   nameMatches <- element ^. attr "name" . to (>>= match)
-  return $ \Cookie{..} -> hostMatches (cs cookie_name) && nameMatches (cs cookie_domain)
+  return $ \Cookie{..} -> nameMatches (cs cookie_name) && hostMatches (cs cookie_domain)
