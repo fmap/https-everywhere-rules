@@ -11,7 +11,7 @@ used secure HTTP connections when possible."
 λ: :m + Data.HTTPSEverywhere.Rules Network.URI
 λ: let Just eff = parseURI "http://www.eff.org/document/eff-and-aclu-amicus-brief-klayman"
 λ: rewriteURL eff
-Just https://www.eff.org/document/eff-and-aclu-amicus-brief-klayman
+https://www.eff.org/document/eff-and-aclu-amicus-brief-klayman
 λ: :m + Web.Cookie Network.HTTP.Client Data.Time.Clock Control.Applicative
 λ: :set -XOverloadedStrings
 λ: (now, req) <- (,) <$> getCurrentTime <*> parseUrl "https://github.com"
