@@ -1,0 +1,8 @@
+                    | Upstream output | Upstream input | Downstream input | Downstream output | Base monad | Return value
+Proxy a' a b' b m r | a'              | a              | b'               | b                 | m          | r
+Effect m r          | Void            | ()             | ()               | Void              | m          | r
+Pipe a b m r        | ()              | a              | ()               | b                 | m          | r
+Producer b m r      | Void            | ()             | ()               | b                 | m          | r
+Consumer a m r      | ()              | a              | ()               | Void              | m          | r
+Client a' a m r     | a'              | a              | ()               | Void              | m          | r
+Server b' b m r     | Void            | ()             | b'               | b                 | m          | r

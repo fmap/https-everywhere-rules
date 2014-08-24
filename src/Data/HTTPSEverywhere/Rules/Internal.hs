@@ -23,7 +23,7 @@ import Data.Maybe (isJust)
 import qualified Data.HTTPSEverywhere.Rules.Raw as Raw (getRule, getRules)
 import Network.HTTP.Client (Cookie(..))
 import Network.URI (URI)
-import Pipes (Producer, Consumer, for, each, await, yield, lift, (>->))
+import Pipes (Pipe, Producer, for, each, await, yield, lift, (>->))
 import Pipes.Prelude (filter)
 
 import Data.HTTPSEverywhere.Rules.Internal.Parser (parseRuleSets)
@@ -38,13 +38,13 @@ getRulesetsMatching url = getRulesets
                       >-> filter (flip hasTargetMatching url)
                       >-> filter (not . flip hasExclusionMatching url)
 
-havingRulesThatTrigger :: URI -> Consumer RuleSet IO (Maybe URI)
-havingRulesThatTrigger url = flip hasTriggeringRuleOn url <$> await
-                         >>= maybe (havingRulesThatTrigger url) (return . Just)
+havingRulesThatTrigger :: URI -> Pipe RuleSet (Maybe URI) IO ()
+havingRulesThatTrigger url = flip hasTriggeringRuleOn url <$> await 
+                         >>= maybe (havingRulesThatTrigger url) (yield . Just)
 
-havingCookieRulesThatTrigger :: Cookie -> Consumer RuleSet IO Bool
+havingCookieRulesThatTrigger :: Cookie -> Pipe RuleSet Bool IO ()
 havingCookieRulesThatTrigger cookie = flip hasTriggeringCookieRuleOn cookie <$> await
-                                  >>= bool (havingCookieRulesThatTrigger cookie) (return True)
+                                  >>= bool (havingCookieRulesThatTrigger cookie) (yield True)
 
 hasTargetMatching :: RuleSet -> URI -> Bool
 hasTargetMatching ruleset url = getTargets ruleset <*> [url] & or
