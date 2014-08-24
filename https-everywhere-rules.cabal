@@ -1,7 +1,7 @@
 name:
   https-everywhere-rules
 version:
-  0.0.1
+  0.1.0
 synopsis:
   High-level access to HTTPS Everywhere rulesets.
 homepage:
