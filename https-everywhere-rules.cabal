@@ -43,7 +43,7 @@ library
     string-conversions >= 0.3  && < 0.4,
     taggy-lens         >= 0.1  && < 0.2,
     text               >= 1.1  && < 1.2,
-    text-icu           >= 0.6  && < 0.7,
+    text-icu           >= 0.6  && < 0.8,
     https-everywhere-rules-raw
   hs-source-dirs:
     src
@@ -68,7 +68,7 @@ test-suite spec
     string-conversions >= 0.3  && < 0.4,
     taggy-lens         >= 0.1  && < 0.2,
     text               >= 1.1  && < 1.2,
-    text-icu           >= 0.6  && < 0.7,
+    text-icu           >= 0.6  && < 0.8,
     https-everywhere-rules-raw
   main-is:
     Spec.hs
