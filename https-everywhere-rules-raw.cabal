@@ -1,7 +1,7 @@
 name:
   https-everywhere-rules-raw
 version:
-  4.0
+  5.1.1
 synopsis:
   Low-level (i.e. XML) access to HTTPS Everywhere rulesets.
 homepage:
