@@ -5,7 +5,7 @@ version:
 synopsis:
   Low-level (i.e. XML) access to HTTPS Everywhere rulesets.
 homepage:
-  https://github.com/fmap/https-everywhere-rules-raw
+  https://github.com/fmap/https-everywhere-rules
 license:
   GPL-2
 license-file:
