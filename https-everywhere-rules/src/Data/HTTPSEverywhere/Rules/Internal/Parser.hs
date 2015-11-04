@@ -10,9 +10,10 @@ module Data.HTTPSEverywhere.Rules.Internal.Parser (
 ) where
 
 import Prelude hiding (head, last, tail, init)
+import Control.Applicative ((<$>))
 import Control.Lens (toListOf, only, to, (^..), (^.), (&), (<&>), _Just)
 import Control.Monad (join)
-import Data.Functor.Infix ((<$>),(<$$>))
+import Data.Functor.Infix ((<$$>))
 import Data.Maybe (catMaybes, fromJust, fromMaybe)
 import Data.String.Conversions (cs)
 import qualified Data.Text as Strict (Text)

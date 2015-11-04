@@ -1,0 +1,9 @@
+flags: {}
+packages:
+- https-everywhere-rules/
+- https-everywhere-rules-raw/
+extra-deps:
+- functor-infix-0.0.3
+- taggy-0.2.0
+- taggy-lens-0.1.2
+resolver: lts-3.12
