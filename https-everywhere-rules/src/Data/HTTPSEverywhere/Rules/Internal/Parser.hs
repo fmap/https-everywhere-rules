@@ -9,7 +9,7 @@ module Data.HTTPSEverywhere.Rules.Internal.Parser (
 #endif
 ) where
 
-import Prelude hiding (head, last, tail, init)
+import Prelude hiding (head, last, tail, init, length)
 import Control.Applicative ((<$>))
 import Control.Lens (toListOf, only, to, (^..), (^.), (&), (<&>), _Just)
 import Control.Monad (join)
@@ -17,7 +17,7 @@ import Data.Functor.Infix ((<$$>))
 import Data.Maybe (catMaybes, fromJust, fromMaybe)
 import Data.String.Conversions (cs)
 import qualified Data.Text as Strict (Text)
-import Data.Text (append, head, last, tail, init, replace)
+import Data.Text (append, head, last, tail, init, replace, length)
 import qualified Data.Text.Lazy as Lazy (Text)
 import Network.HTTP.Client (Cookie(..))
 import Network.URI (URI(uriAuthority), URIAuth(uriRegName), parseURI)
@@ -40,6 +40,7 @@ parseRuleSet xml = xml ^. attr "name" <&> \ruleSetName -> do
 parseTarget :: Strict.Text -> Target
 parseTarget = Target . checkRegName . fromJust . match . fromWildcard . replace "." "\\."
   where fromWildcard str
+          | length str == 0 = str
           | head str == '*' = flip append ".*" $ tail str
           | last str == '*' = append ".*" $ init str
           | otherwise       = str
