@@ -2,6 +2,10 @@ flags: {}
 packages:
 - https-everywhere-rules/
 - https-everywhere-rules-raw/
+- examples/
+- location:
+    git: https://github.com/erikd/http-proxy.git
+    commit: 3f7a4013c126215e61eeb34a2372b4bd1ef77c76
 extra-deps:
 - functor-infix-0.0.3
 - taggy-0.2.0

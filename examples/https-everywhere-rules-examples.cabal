@@ -1,0 +1,34 @@
+name:
+  https-everywhere-rules-examples
+version:
+  0.0.1
+homepage:
+  https://github.com/fmap/https-everywhere-rules
+license:
+  MIT
+license-file:
+  LICENSE
+author:
+  vi
+maintainer:
+  me@vikramverma.com
+category:
+  Network
+build-type:
+  Simple
+cabal-version:
+  >=1.10
+
+executable RedirectProxy
+  main-is:
+    RedirectProxy.hs
+  build-depends:
+    base >=4.7 && <4.9,
+    bytestring,
+    http-proxy,
+    http-types,
+    https-everywhere-rules,
+    network-uri,
+    wai
+  default-language:
+    Haskell2010
