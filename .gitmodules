@@ -1,4 +1,4 @@
-[submodule "https-everywhere-rules-raw/vendor/https-everywhere"]
-	path   = https-everywhere-rules-raw/vendor/https-everywhere
+[submodule "vendor/https-everywhere"]
+	path = vendor/https-everywhere
 	url    = https://git.torproject.org/https-everywhere.git
 	branch = 4.0
