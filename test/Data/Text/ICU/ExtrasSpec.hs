@@ -24,10 +24,13 @@ spec = do
     it "Should correctly parse successive '$'s" $ do
       parseReplacement "$$1" `shouldBe` Just [Literal "$", Reference 1]
       parseReplacement "$$" `shouldBe` Just [Literal "$", Literal "$"]
+    it "Should identity no more than nine capture groups." $ do
+      parseReplacement "$10" `shouldBe` Just [Reference 1, Literal "0"]
   describe "findAndReplace" $ do
     it "Should find and replace based upon a regular expression and pattern." $ do
-     ("barqux" &) <$> findAndReplace "(bar)" "$1baz" `shouldBe` Just (Just "barbazqux")
-     ("barqux" &) <$> findAndReplace "(qux)" "baz$1" `shouldBe` Just (Just "barbazqux")
+      ("barqux" &) <$> findAndReplace "(bar)" "$1baz" `shouldBe` Just (Just "barbazqux")
+      ("barqux" &) <$> findAndReplace "(qux)" "baz$1" `shouldBe` Just (Just "barbazqux")
+      ("barqux" &) <$> findAndReplace "u" "uu" `shouldBe` Just (Just "barquux")
 
 instance Show (Text -> Bool) where
   show _ = "Text -> Bool"

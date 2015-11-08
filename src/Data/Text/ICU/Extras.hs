@@ -16,28 +16,32 @@ import Prelude hiding (span)
 import Control.Applicative ((<$>), (<*>), (*>), (<|>))
 import Control.Error (hush)
 import Data.Attoparsec.Text (Parser, char, digit, takeWhile1, string, many', parseOnly)
+import Data.Char (digitToInt)
 import Data.Functor.Infix ((<$$>), (<&>))
-import Data.Maybe (isJust, fromJust)
-import Data.Monoid (Monoid(mconcat))
+import Data.Maybe (isJust)
+import Data.Monoid (Monoid(mappend, mconcat))
 import Data.Text (Text)
-import Data.Text.ICU (regex', find, findAll, group, span, Match, suffix, groupCount)
+import Data.Text.ICU (Regex, regex', find, findAll, group, span, Match, suffix, groupCount)
+
+regex :: Text -> Maybe Regex
+regex = hush . regex' []
 
 match :: Text -> Maybe (Text -> Bool)
-match = isJust <$$> find <$$> hush . regex' []
+match = (isJust <$$> find) <$$> regex
 
 findAndReplace :: Text -> Text -> Maybe (Text -> Maybe Text)
-findAndReplace pattern replacement = do
-  findAnd <- findAll <$$> hush $ regex' [] pattern
-  replace <- flip runReplacement <$> parseReplacement replacement
-  return $ replace . findAnd
+findAndReplace pattern replacement = (.)
+  <$> runReplacement `fmap` parseReplacement replacement
+  <*> findAll `fmap` regex pattern
 
 type Replacement = [Segment]
 
-data Segment = Reference Int | Literal Text
-  deriving (Show, Eq)
+data Segment = Reference Int | Literal Text deriving (Show, Eq)
 
+-- JavaScript admits at most nine capture groups, so this is the correct
+-- (and likely intended) interpretation.
 parseReference :: Parser Segment
-parseReference = char '$' *> digit <&> Reference . read . return
+parseReference = char '$' *> digit <&> Reference . digitToInt
 
 parseLiteral :: Parser Segment
 parseLiteral = Literal <$> takeWhile1 (/= '$')
@@ -51,19 +55,30 @@ parseSegment = parseLiteral <|> parseReference <|> parseLiteralDollar
 parseReplacement :: Text -> Maybe Replacement
 parseReplacement = hush . parseOnly (many' parseSegment)
 
-runReplacement :: [Match] -> Replacement -> Maybe Text
-runReplacement matches replacement = mconcat <$$> invert . adornSuffix matches $ do
-  match <- matches
-  Just (span match) : map (dereference $ flip group match) replacement
+-- In the language of ICU, given a match:
+--
+-- * 'span'     : Text preceding the given match.
+-- * 'suffix n' : Suffix of the /n/th capturing group in the match.
+--
+-- To reconstitute strings in replacement, we 'prefix' all matches
+-- with their spans, use their groups to 'dereference' replacements
+-- (references are replaced with corresponding captures, literals are
+-- inserted as is), cat the results in order, and finally append the
+-- suffix of the terminal capturing group ('getSuffix'). When there are
+-- no explicit groups, we use the zeroeth; that is, the text following
+-- the final match.
 
-adornSuffix :: [Match] -> ([Maybe Text] -> [Maybe Text])
-adornSuffix = \case {[] -> id; ms -> (++ [flip suffix <*> groupCount $ last ms])}
+runReplacement :: Replacement -> [Match] -> Maybe Text
+runReplacement replacement matches = do
+  prefix  <- sequence $ matches >>= \match ->
+    Just (span match) : dereference match replacement
+  mappend (mconcat prefix) <$> getSuffix matches
 
-dereference :: (Int -> Maybe Text) -> Segment -> Maybe Text
-dereference group = \case
-  Reference n -> group n
+dereference :: Match -> Replacement -> [Maybe Text]
+dereference match = fmap $ \case
+  Reference n -> group n match
   Literal str -> Just str
 
-invert :: [Maybe a] -> Maybe [a]
-invert xs | all isJust xs = Just $ fromJust <$> xs
-          | otherwise     = Nothing
+getSuffix :: [Match] -> Maybe Text
+getSuffix [] = Just mempty
+getSuffix ms = flip suffix <*> groupCount $ last ms
